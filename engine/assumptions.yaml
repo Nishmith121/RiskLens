@@ -1,0 +1,71 @@
+# RiskLens assumptions library (MVP)
+# All money values are in ₹ lakh.
+# Frequencies are expected attacks per year (Poisson λ).
+# Severities are lognormal: median cost per attack and sigma (spread).
+#
+# NOTE: these values are illustrative and calibrated to the Sharma Logistics
+# example in the idea deck. Each one will be replaced by a value derived from a
+# cited public source (IBM Cost of a Data Breach, Verizon DBIR, CERT-In,
+# Sophos State of Ransomware) with the source recorded in the `source` field.
+
+scenarios:
+  ransomware:
+    label: Ransomware via phishing or exposed services
+    frequency: 0.12
+    severity_median: 180
+    severity_sigma: 0.85
+    source: TODO
+  bec:
+    label: Business email compromise (invoice / payment fraud)
+    frequency: 0.20
+    severity_median: 13
+    severity_sigma: 1.0
+    source: TODO
+  credential_breach:
+    label: Credential breach and data theft
+    frequency: 0.12
+    severity_median: 22
+    severity_sigma: 1.0
+    source: TODO
+  third_party:
+    label: Third-party / supplier compromise
+    frequency: 0.07
+    severity_median: 24
+    severity_sigma: 1.0
+    source: TODO
+
+# Each control multiplies a scenario's frequency and/or severity.
+# annual_cost is in ₹ lakh per year.
+controls:
+  mfa:
+    label: Turn on MFA
+    annual_cost: 1.5
+    effects:
+      ransomware: {frequency: 0.60}
+      bec: {frequency: 0.60}
+      credential_breach: {frequency: 0.30}
+  offline_backups:
+    label: Offline backups
+    annual_cost: 3.0
+    effects:
+      ransomware: {severity: 0.50}
+  staff_training:
+    label: Staff training
+    annual_cost: 1.5
+    effects:
+      ransomware: {frequency: 0.80}
+      bec: {frequency: 0.35}
+      credential_breach: {frequency: 0.65}
+  edr:
+    label: Endpoint detection and response (EDR)
+    annual_cost: 4.0
+    effects:
+      ransomware: {frequency: 0.70, severity: 0.85}
+  ir_plan:
+    label: Incident response plan
+    annual_cost: 2.0
+    effects:
+      ransomware: {severity: 0.95}
+      bec: {severity: 0.90}
+      credential_breach: {severity: 0.90}
+      third_party: {severity: 0.90}
